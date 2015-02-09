@@ -23,7 +23,7 @@ hooks.github = require('./routes/hooks/github')
 app.use(domainMiddleware)
 app.use(bodyParser({limit: '10mb'}))
 app.use(methodOverride())
-app.use(cors)
+app.use(cors())
 app.use(cookieParser())
 app.use(session({
   secret: config.session.secret
@@ -39,13 +39,13 @@ app.use('/auth', auth)
 app.use('/hooks/github', hooks.github)
 
 app.get(/^\/?$/, function (req, res) {
-  res.send(200, '')
+  res.status(200).send('')
 })
 
 // last resort error handler
 app.use(function (err, req, res, next) {
   console.error(err.name, err.stack)
-  res.send(500, 'An error has occurred')
+  res.status(500).send('An error has occurred')
 })
 
-module.export = app
+module.exports = app
