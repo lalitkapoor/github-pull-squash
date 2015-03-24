@@ -14,11 +14,13 @@ var domainMiddleware = require('express-domain-middleware')
 var cors = require('cors')
 
 //Routes
-var auth = require('./routes/auth')
+var routes = {}
+routes.auth = require('./routes/auth')
+routes.base = require('./routes/base')
 
 // Hooks
-var hooks = {}
-hooks.github = require('./routes/hooks/github')
+routes.hooks = {}
+routes.hooks.github = require('./routes/hooks/github')
 
 app.use(domainMiddleware)
 app.use(bodyParser({limit: '10mb'}))
@@ -35,8 +37,9 @@ app.use(session({
 }))
 
 
-app.use('/auth', auth)
-app.use('/hooks/github', hooks.github)
+app.use('', routes.base)
+app.use('/auth', routes.auth)
+app.use('/hooks/github', routes.hooks.github)
 
 app.get(/^\/?$/, function (req, res) {
   res.status(200).send('')
