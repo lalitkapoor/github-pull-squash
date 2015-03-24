@@ -4,7 +4,7 @@ var _ = require('lodash')
 
 var config = {
   defaults: {
-    pgConnStr: process.env.PG_CONN_STR
+    pgConnStr: process.env.PG_CONN_STR || process.env.DATABASE_URL
   , host: process.env.HOST
   , port: process.env.PORT || 5000
   , github: {
