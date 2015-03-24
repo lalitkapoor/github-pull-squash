@@ -6,11 +6,12 @@ var config = require('@/config')
 
 var _ = require('lodash')
 var Promise = require('bluebird')
-var redis = require('redis').createClient()
 var GitHubApi = require('github')
 var request = require('superagent')
 var crypto = Promise.promisifyAll(require('crypto'))
 var router = require('express').Router()
+
+var db = require('@/lib/db')
 
 var github = new GitHubApi({
   version: "3.0.0"
@@ -67,9 +68,10 @@ router.get('/github/callback', function(req, res) {
       if (!user.id) return res.status(500).send('an error occurred getting user from github')
 
       var data = _.extend({}, user, {oauth: oauth})
-      redis.HMSET('user:' + user.id, data, function(error) {
+      db.run('upsert-user', [user.id, data], function (error, rows) {
+        if (error) console.error(error)
         if (error) return res.status(500).send('an error occurred talking to our database')
-        // set user cookie, because they are now authenticated
+
         req.session.github = {user: user, oauth: oauth, token: token}
         return res.redirect('/')
       })
